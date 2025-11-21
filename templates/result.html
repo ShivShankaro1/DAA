@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Optimal Cargo Result</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      background: radial-gradient(circle at top left, #1e1e2f, #111);
+      color: white;
+      min-height: 100vh;
+    }
+    .card {
+      background: rgba(0,0,0,0.7);
+      border-radius: 20px;
+    }
+    .summary {
+      background: rgba(255,255,255,0.1);
+    }
+    .gradient-text {
+      background: linear-gradient(90deg, #00c6ff, #0072ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    canvas {
+      background-color: rgba(255,255,255,0.05);
+      border-radius: 10px;
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay"></div>
+  <div class="container mt-5 fade-in">
+    <div class="card shadow-lg p-4">
+      <h1 class="text-center mb-2 gradient-text">📦 Optimal Cargo Loading Result</h1>
+      <p class="text-center text-muted mb-3">Algorithm: <strong>{{ algo_name }}</strong></p>
+
+      <!-- Cargo Result Section -->
+      <div class="row">
+        <div class="col-md-12">
+          <h5 class="mb-2 text-center">Selected Cargos (Order of Loading)</h5>
+
+          {% if selected %}
+          <ol class="list-group list-group-numbered mb-4">
+            {% for name, weight, profit in selected %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <div>
+                <strong>{{ name }}</strong><br>
+                <small class="text-muted">Weight: {{ weight }} | Profit: {{ profit }}</small>
+              </div>
+              <span class="badge bg-warning text-dark rounded-pill">{{ profit }}</span>
+            </li>
+            {% endfor %}
+          </ol>
+          {% else %}
+            <p class="empty text-center">No cargos selected for this capacity.</p>
+          {% endif %}
+
+          <!-- Summary -->
+          <div class="summary text-center p-3 mt-3 border rounded text-light">
+            <p><strong>Truck Capacity:</strong> {{ capacity }}</p>
+            <p><strong>Total Weight (Selected):</strong> {{ total_weight }}</p>
+            <p><strong>Total Profit:</strong> {{ total_profit }}</p>
+          </div>
+
+          <div class="text-center mt-4">
+            <a href="/" class="btn btn-gradient">← Back</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Visualization Section -->
+      <hr class="my-4">
+      <div class="visualization mt-4">
+        <h4 class="text-center gradient-text mb-4">📊 Cargo Profit Visualization</h4>
+        <div class="row justify-content-center">
+          <div class="col-md-10">
+            <canvas id="barChart" height="150"></canvas>
+          </div>
+          <div class="col-md-8 mt-5">
+            <canvas id="pieChart" height="150"></canvas>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // --- Safe JSON parsing ---
+    const allLabels = {{ labels | tojson | safe }};
+    const allProfits = {{ profits | tojson | safe }};
+    const selLabels = {{ sel_labels | tojson | safe }};
+    const selProfits = {{ sel_profits | tojson | safe }};
+
+    // --- Color Palette ---
+    const colors = [
+      'rgba(255, 99, 132, 0.8)',   // Red
+      'rgba(54, 162, 235, 0.8)',   // Blue
+      'rgba(255, 206, 86, 0.8)',   // Yellow
+      'rgba(75, 192, 192, 0.8)',   // Teal
+      'rgba(153, 102, 255, 0.8)',  // Purple
+      'rgba(255, 159, 64, 0.8)',   // Orange
+      'rgba(0, 200, 83, 0.8)',     // Green
+      'rgba(233, 30, 99, 0.8)'     // Pink
+    ];
+
+    // --- Bar Chart (All Cargos) ---
+    if (allLabels && allLabels.length > 0) {
+      const ctxBar = document.getElementById('barChart').getContext('2d');
+      new Chart(ctxBar, {
+        type: 'bar',
+        data: {
+          labels: allLabels,
+          datasets: [{
+            label: 'Cargo Profit',
+            data: allProfits,
+            backgroundColor: colors,
+            borderColor: 'rgba(255,255,255,0.8)',
+            borderWidth: 1,
+            borderRadius: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false },
+            title: {
+              display: true,
+              text: 'Profit per Cargo Item',
+              color: '#fff'
+            }
+          },
+          scales: {
+            x: { ticks: { color: '#fff' } },
+            y: { beginAtZero: true, ticks: { color: '#fff' } }
+          },
+          animation: { duration: 1200, easing: 'easeOutQuart' }
+        }
+      });
+    }
+
+    // --- Pie Chart (Selected Cargos) ---
+    if (selLabels && selLabels.length > 0) {
+      const ctxPie = document.getElementById('pieChart').getContext('2d');
+      new Chart(ctxPie, {
+        type: 'pie',
+        data: {
+          labels: selLabels,
+          datasets: [{
+            label: 'Selected Cargo Profit Share',
+            data: selProfits,
+            backgroundColor: colors.slice(0, selLabels.length),
+            borderColor: '#fff',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: 'bottom', labels: { color: '#fff' } },
+            title: {
+              display: true,
+              text: 'Selected Cargo Profit Distribution',
+              color: '#fff'
+            }
+          },
+          animation: { duration: 1000, easing: 'easeOutCubic' }
+        }
+      });
+    }
+  </script>
+</body>
+</html>

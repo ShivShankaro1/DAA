@@ -1,0 +1,183 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+:root {
+  --accent1: #ff9800;
+  --accent2: #ffb300;
+  --muted: rgba(255, 255, 255, 0.85);
+  --active-glow: rgba(255, 183, 3, 0.8);
+  --active-bg: rgba(255, 183, 3, 0.18);
+}
+
+/* === General Layout === */
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #2b2b2b, #6d4c41, #b57f50);
+  color: #fff;
+  min-height: 100vh;
+  overflow-x: hidden;
+  margin: 0;
+  padding-top: 30px;
+}
+
+/* Background Overlay */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('https://images.unsplash.com/photo-1529078155058-5d716f45d604?auto=format&fit=crop&w=1600&q=80');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.14;
+  z-index: -1;
+  filter: blur(3px) saturate(0.8);
+}
+
+/* === Containers & Cards === */
+.container {
+  width: 92%;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.06);
+  border: none;
+  border-radius: 14px;
+  padding: 28px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45),
+              0 0 30px rgba(255, 120, 0, 0.08);
+  color: #fff;
+}
+
+/* === Text and Headings === */
+h1, h2, h3, h4, h5, h6, p, label, strong, small {
+  color: #fff;
+}
+
+.gradient-text {
+  background: linear-gradient(90deg, var(--accent1), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 600;
+}
+
+/* === Buttons === */
+.btn-gradient {
+  background: linear-gradient(90deg, var(--accent1), var(--accent2));
+  border: none;
+  color: #111;
+  padding: 8px 18px;
+  border-radius: 8px;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.btn-gradient:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 20px rgba(255, 160, 60, 0.12);
+}
+
+.back-btn {
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  padding: 8px 14px;
+  border: none;
+  transition: background 0.3s ease;
+}
+.back-btn:hover {
+  background: rgba(0, 0, 0, 0.65);
+}
+
+/* === Tables & Summary === */
+.table-dark {
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 8px;
+  overflow: hidden;
+  color: #fff;
+}
+
+.table-dark th, .table-dark td {
+  color: #f9f9f9;
+}
+
+.summary {
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 8px;
+  margin-top: 12px;
+  color: #fff;
+  padding: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* === Algorithm Cards === */
+.algo-card {
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border 0.2s ease, background 0.25s ease;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  height: 100%;
+  border: 2px solid transparent;
+  color: #fff;
+}
+
+.algo-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+  border-color: rgba(255, 183, 3, 0.6);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.algo-card.active {
+  border-color: var(--accent2);
+  box-shadow: 0 0 25px var(--active-glow);
+  transform: translateY(-4px) scale(1.03);
+  background: var(--active-bg);
+  color: #fff;
+}
+
+/* === Misc === */
+.empty {
+  color: rgba(255, 255, 255, 0.6);
+  font-style: italic;
+}
+
+.fade-in {
+  animation: fadeIn 0.6s ease;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.btn-outline-light {
+  border-color: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* === Chart Styling === */
+canvas {
+  background-color: rgba(0, 0, 0, 0.25);
+  border-radius: 10px;
+  padding: 10px;
+}
+
+/* === Result Page Enhancements === */
+.result-section h2, .result-section h3, .result-section p {
+  color: #fff;
+  text-shadow: 0 0 10px rgba(0,0,0,0.6);
+}
+
+.result-summary {
+  color: #0d831b;
+}
+
+.result-summary strong {
+  color: var(--accent1);
+}

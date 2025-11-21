@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cargo Loading Optimization</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="overlay"></div>
+  <div class="container mt-5 fade-in">
+    <div class="card shadow-lg p-4">
+      <div class="d-flex align-items-center justify-content-center">
+        <h1 class="me-3 gradient-text">🚚 Cargo Loading Optimization</h1>
+      </div>
+      <p class="text-center text-muted mb-4">
+        Find the most profitable cargo combination using multiple algorithms
+      </p>
+
+      <!-- Add cargo form -->
+      <form method="POST" action="/add" class="mb-4">
+        <div class="row g-2">
+          <div class="col-md-5">
+            <input type="text" name="name" class="form-control" placeholder="Cargo Name" required>
+          </div>
+          <div class="col-md-3">
+            <input type="number" name="weight" class="form-control" placeholder="Weight" required>
+          </div>
+          <div class="col-md-3">
+            <input type="number" name="profit" class="form-control" placeholder="Profit" required>
+          </div>
+          <div class="col-md-1 d-grid">
+            <button type="submit" class="btn btn-gradient">➕</button>
+          </div>
+        </div>
+      </form>
+
+      <!-- Current cargos -->
+      {% if cargos %}
+      <h5 class="text-center mb-3">📦 Current Cargo List</h5>
+      <div class="table-responsive">
+        <table class="table table-dark table-striped text-center align-middle">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Weight</th>
+              <th>Profit</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for name, weight, profit in cargos %}
+            <tr>
+              <td>{{ name }}</td>
+              <td>{{ weight }}</td>
+              <td>{{ profit }}</td>
+              <td>
+                <a href="{{ url_for('delete_cargo', name=name) }}" class="btn btn-sm btn-outline-warning">🗑 Delete</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p class="text-center empty">No cargos yet — add some to test algorithms.</p>
+      {% endif %}
+
+      <!-- Algorithm selection -->
+      <h5 class="mt-4">⚙️ Select Algorithm</h5>
+      <div id="algoCards" class="row g-3 mt-2">
+        {% for key, (label, _) in algo_map.items() %}
+        <div class="col-md-4">
+          <div class="card algo-card" data-key="{{ key }}">
+            <div class="card-body">
+              <h6>{{ label }}</h6>
+              <p class="small text-muted mb-0">
+                {% if key == 'dp' %} Bottom-up DP (Optimal for 0/1 knapsack). {% endif %}
+                {% if key == 'greedy' %} Greedy by profit/weight ratio (approx). {% endif %}
+                {% if key == 'memo' %} Top-down memoization. {% endif %}
+                {% if key == 'pure' %} Pure recursive (naive). {% endif %}
+                {% if key == 'bnb' %} Branch & Bound (best-first using fractional bound). {% endif %}
+              </p>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Solve form -->
+      <form method="POST" action="/result" id="solveForm" class="mt-4">
+        <input type="hidden" name="algorithm" id="algorithm" value="dp">
+        <div class="mb-3">
+          <label class="form-label">⚖️ Enter Maximum Cargo Capacity (Weight)</label>
+          <input type="number" name="capacity" class="form-control" placeholder="e.g. 50" required>
+        </div>
+
+        <div class="d-flex gap-3 justify-content-center">
+          <button type="submit" class="btn btn-gradient">🚀 Solve Problem</button>
+        </div>
+      </form>
+
+      <!-- Compare form -->
+      <form action="/compare" method="post" id="compareForm" class="mt-3">
+        <input type="hidden" name="capacity" id="compareCapacity" value="">
+        <div class="d-flex justify-content-center">
+          <button type="submit" class="btn btn-outline-light">🔍 Compare All Algorithms</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Handle algorithm card selection
+    document.querySelectorAll('.algo-card').forEach(card => {
+      card.addEventListener('click', () => {
+        document.getElementById('algorithm').value = card.dataset.key;
+        document.querySelectorAll('.algo-card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+      });
+    });
+
+    // Pass capacity value to compare form
+    document.addEventListener('DOMContentLoaded', () => {
+      const capacityInput = document.querySelector('input[name="capacity"]');
+      const compareCapacity = document.getElementById('compareCapacity');
+      const compareForm = document.getElementById('compareForm');
+
+      compareForm.addEventListener('submit', (e) => {
+        if (capacityInput && compareCapacity) {
+          compareCapacity.value = capacityInput.value;
+        }
+      });
+    });
+  </script>
+</body>
+</html>
